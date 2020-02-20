@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$version": "LoReHLT19_v0.1",
+  "definitions": {
+      "need_frame": {
+	  "type": "object",
+	  "properties": {
+	      "DocumentID": { "type": "string" },
+	      "Type": { "type": "string",
+			"enum": [ "evac",
+				  "food",
+				  "infra",
+				  "med",
+				  "search",
+				  "shelter",
+				  "utils",
+				  "water" ] },
+	      "Confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+	      "Place_KB_ID": { "type": "string" },
+	      "Justification_ID": { "type": "string" },
+	      "Status":{
+	      	   "type": "string",
+			   "enum": [ "current",
+				  "future",
+				  "past"] },
+		  "SEC": {
+		  		 "type": "array",
+  				 "items": { "$ref": "#/definitions/SECitem" }},
+		  "Resolution": {
+			  "type": "string",
+			  "enum": [ "sufficient",
+				    "insufficient" ] },
+		  "Urgent": { "type": "boolean" }
+		  },
+	  "required": ["DocumentID", "Confidence", "Justification_ID", "Type", "Status", "SEC", "Resolution", "Urgent", "Place_KB_ID"]
+      },
+      "issue_frame": {
+	  "type": "object",
+	  "properties": {
+	      "DocumentID": { "type": "string" },
+	      "Type": { "type": "string",
+			"enum": [ "regimechange",
+				  "crimeviolence",
+				  "terrorism" ] },
+	      "Confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+	      "Place_KB_ID": { "type": "string" },
+	      "Justification_ID": { "type": "string" },
+	      "Status": {
+		  "type": "string",
+		  "enum": [ "current",
+				  "not_current"] },
+		  "Urgent": { "type": "boolean" }
+	  },
+	  "required": ["DocumentID", "Confidence", "Justification_ID", "Type", "Status", "SEC", "Urgent", "Place_KB_ID"]
+  },
+
+  "SECitem": {
+  	"type": "object",
+  	"properties": {
+  		"Sentiment": { "type": "number",
+  		"enum": [ -3, -2.5, -2, -1.5 , -1, -0.5, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+  	},
+  		"Emotion_Fear": { "type": "boolean" },
+		"Emotion_Anger": { "type": "boolean" },
+		"Emotion_Joy": { "type": "boolean" },
+		"Source": { "type": "string" }
+  	},
+	"required": ["Sentiment", "Source"] 
+  }
+
+},
+  "type": "array",
+  "items": {
+      "anyOf": [ { "$ref": "#/definitions/need_frame" },
+		 { "$ref": "#/definitions/issue_frame" } ]
+  }
+}
+
