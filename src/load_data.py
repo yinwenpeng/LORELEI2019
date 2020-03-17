@@ -62,6 +62,27 @@ def transfer_wordlist_2_idlist_with_maxlen(token_list, vocab_map, maxlen):
         mask_list=mask_list[:maxlen]
     return idlist, mask_list
 
+def transfer_wordlist_2_idlist_with_maxlen_in_Test(token_list, vocab_map, maxlen):
+    '''
+    From such as ['i', 'love', 'Munich'] to idlist [23, 129, 34], if maxlen is 5, then pad two zero in the left side, becoming [0, 0, 23, 129, 34]
+    '''
+    idlist=[]
+    for word in token_list:
+
+        id=vocab_map.get(word)
+        if id is not None: # if word was not in the vocabulary
+            idlist.append(id)
+
+    mask_list=[1.0]*len(idlist) # mask is used to indicate each word is a true word or a pad word
+    pad_size=maxlen-len(idlist)
+    if pad_size>0:
+        idlist=idlist+[0]*pad_size
+        mask_list=mask_list+[0.0]*pad_size
+    else: # if actual sentence len is longer than the maxlen, truncate
+        idlist=idlist[:maxlen]
+        mask_list=mask_list[:maxlen]
+    return idlist, mask_list
+
 def load_trainingData_types(word2id, maxlen):
     BBN_path = '/home1/w/wenpeng/dataset/LORELEI/trainingdata/'
     files = [
@@ -317,6 +338,21 @@ def average_f1_two_array_by_col(arr1, arr2):
     # print 'mean_f1, weighted_f1:', mean_f1, weighted_f1
     # exit(0)
     return mean_f1, weighted_f1
+
+
+def load_somali_input(word2id, maxlen, input_sent_str):
+    all_sentences=[]
+    all_masks=[]
+    lines=[]
+    lines.append(input_sent_str)
+    sentence_wordlist=input_sent_str.strip().split()
+    sent_idlist, sent_masklist=transfer_wordlist_2_idlist_with_maxlen_in_Test(sentence_wordlist, word2id, maxlen)
+    all_sentences.append(sent_idlist)
+    all_masks.append(sent_masklist)
+
+    print('\t\t\t size:', len(all_sentences))
+    print('dataset loaded over, totally ', len(word2id), 'words')
+    return all_sentences, all_masks, lines, word2id
 
 def load_official_testData_il_and_MT(word2id, maxlen, fullpath, input_type):
     all_sentences=[]
