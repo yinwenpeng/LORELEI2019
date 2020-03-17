@@ -603,62 +603,27 @@ def somali_get_type(lines, pred_types, pred_confs, pred_others):
     # pred_needs = pred_types[:,:8]
     # pred_issues = np.concatenate([pred_types[:,8:9], pred_types[:, 10:]),axis=1)  #(all, 3)
 
+    return_type = 'no type detected'
     #needs
     for i in range(instance_size):
         # print 'lines[i]:', lines[i].split('\t')
         # entity_pos_list = ['10-13-GPE']# lines[i].split('\t')[3].split()
         pred_vec = list(pred_types[i])
-        text_parts = lines[i].split('\t')
-        doc_id = text_parts[0]
-        seg_id = text_parts[1]
-        entity_pos_list = text_parts[3].split() #116-123-6252001 125-130-49518 198-203-49518
+        # text_parts = lines[i].split('\t')
+        # doc_id = text_parts[0]
+        # seg_id = text_parts[1]
+        # entity_pos_list = text_parts[3].split() #116-123-6252001 125-130-49518 198-203-49518
         for x, y in enumerate(pred_vec):
             '''if current type is predicted positive'''
             if y == 1:
                 '''0~7 need types'''
                 if x < 8: # is a need type
-                    for entity_pos in entity_pos_list:
-                        kb_id = entity_pos.split('-')[2]
-                        new_dict={}
-                        new_dict['DocumentID'] = doc_id
-                        hit_need_type = id2type.get(x)
-                        new_dict['Type'] = hit_need_type
-                        new_dict['Place_KB_ID'] = kb_id
-                        status,  relief,urgency = get_need_other_fields(pred_others[i])
-                        new_dict['Status'] = status
-                        new_dict['Confidence'] = float(pred_confs[i][x])
-                        new_dict['Justification_ID'] = seg_id
-                        new_dict['Resolution'] = relief
-                        new_dict['Urgent'] = urgency
-                        # print('atart sec input')
-                        new_dict['SEC'] = [{'Sentiment': 1.0, 'Emotion_Fear':True, 'Emotion_Anger': True, 'Emotion_Joy': False, 'Source': 'other'}]
-
-                        # if new_dict.get('Confidence') > 0.4:
-                        output_dict_list.append(new_dict)
-
+                    return_type = id2type.get(x)
                 elif x < 11: # is issue
                     '''8,9,10: issue types'''
-                    for entity_pos in entity_pos_list:
-                        kb_id = entity_pos.split('-')[2]
-                        new_dict={}
-                        new_dict['DocumentID'] = doc_id
-                        hit_issue_type = id2type.get(x)
-                        new_dict['Type'] = hit_issue_type
-                        new_dict['Place_KB_ID'] = kb_id
-                        # new_dict['Place_'] = 14.0
-                        status, urgency = get_issue_other_fields(pred_others[i])
-                        new_dict['Status'] = status
-                        new_dict['Confidence'] = float(pred_confs[i][x])
-                        new_dict['Justification_ID'] = seg_id
-                        new_dict['Urgent'] = urgency
+                    return_type = id2type.get(x)
 
-                        new_dict['SEC'] = [{'Sentiment': 1.0, 'Emotion_Fear':True, 'Emotion_Anger': True, 'Emotion_Joy': False, 'Source': 'other'}]
-                        # print(new_dict)
-                        # exit(0)
-                        # if new_dict.get('Confidence') > 0.4:
-                        output_dict_list.append(new_dict)
-
-    return output_dict_list[0].get('Type')
+    return return_type
     # refine_output_dict_list, ent_size = de_duplicate(output_dict_list)
     # frame_size = len(output_dict_list)
     # mean_frame = frame_size*1.0/ent_size
