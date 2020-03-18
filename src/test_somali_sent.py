@@ -401,6 +401,6 @@ if __name__ == '__main__':
     label_sent = autograd.Variable(torch.cuda.LongTensor(label_sent))
     label_mask = autograd.Variable(torch.cuda.FloatTensor(label_mask))
 
-    sent_type = test(test_sents, test_masks, test_lines, model, label_sent, label_mask, id2word)
+    sent_type_list = test(test_sents, test_masks, test_lines, model, label_sent, label_mask, id2word)
 
-    return sent_type
+    return sent_type_list

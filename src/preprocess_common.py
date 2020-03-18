@@ -603,7 +603,7 @@ def somali_get_type(lines, pred_types, pred_confs, pred_others):
     # pred_needs = pred_types[:,:8]
     # pred_issues = np.concatenate([pred_types[:,8:9], pred_types[:, 10:]),axis=1)  #(all, 3)
 
-    return_type = 'no type detected'
+    return_type_list = []
     #needs
     for i in range(instance_size):
         # print 'lines[i]:', lines[i].split('\t')
@@ -619,11 +619,13 @@ def somali_get_type(lines, pred_types, pred_confs, pred_others):
                 '''0~7 need types'''
                 if x < 8: # is a need type
                     return_type = id2type.get(x)
+                    return_type_list.append(return_type)
                 elif x < 11: # is issue
                     '''8,9,10: issue types'''
                     return_type = id2type.get(x)
+                    return_type_list.append(return_type)
 
-    return return_type
+    return return_type_list
     # refine_output_dict_list, ent_size = de_duplicate(output_dict_list)
     # frame_size = len(output_dict_list)
     # mean_frame = frame_size*1.0/ent_size
